@@ -5,9 +5,10 @@ Creación de instancias y creación del modelo usuarios y bases de datos
 
 from pydantic import BaseModel
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.openapi.utils import get_openapi
 from app.models.user import User
 from app.models.db import DB
+from ruamel.yaml import YAML
 
 app = FastAPI()
 db = DB('data_base_file.db')
@@ -19,9 +20,14 @@ class CreateUserRequest(BaseModel):
     password: str = 'pass_test1'
 
 
+class TransactionRequest(BaseModel):
+    type: str
+    amount: float
+
+
 @app.get("/")
 def index():
-    return "Backed usuarios database"
+    return "Backed User's transactions"
 
 
 @app.post("/users")
@@ -54,5 +60,25 @@ def get_all_users():
     return user_list
 
 
+@app.post("/users/{user_id}/transactions")
+def add_transaction(user_id: int, transaction: TransactionRequest):
+    db.add_transaction(user_id, transaction.type, transaction.amount)
+    return {"message": "Transaction added"}
+
+
+@app.get("/users/{user_id}/transactions/total")
+def get_total_transactions(user_id: int):
+    total_transactions = db.get_total_transactions(user_id)
+    return total_transactions
+
+
+def generate_openapi_yaml():
+    openapi_schema = get_openapi(title="Your API Title", version="1.0.0")
+    yaml = YAML()
+    with open("openapi.yaml", "w") as file:
+        yaml.dump(openapi_schema, file)
+
+
 if __name__ == "__main__":
+    db.create_tables()
     app.run(debug=True)
