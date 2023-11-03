@@ -73,12 +73,15 @@ def get_total_transactions(user_id: int):
 
 
 def generate_openapi_yaml():
-    openapi_schema = get_openapi(title="Your API Title", version="1.0.0")
+    openapi_schema = get_openapi(
+        title="Your API Title", version="1.0.0", routes="/users")
     yaml = YAML()
     with open("openapi.yaml", "w") as file:
         yaml.dump(openapi_schema, file)
 
 
+generate_openapi_yaml()
 if __name__ == "__main__":
     db.create_tables()
-    app.run(debug=True)
+    generate_openapi_yaml()
+    # app.run(debug=True)
