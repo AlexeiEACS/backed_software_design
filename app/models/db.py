@@ -98,6 +98,13 @@ class DB:
         result = cursor.fetchall()
         return {"user_id": user_id, "total": dict(result)}
 
+    def delete_transaction(self, user_id: int):
+        connection = self._get_thread_connection()
+        cursor = connection.cursor()
+        query = "DELETE FROM transactions WHERE id = ?"
+        cursor.execute(query, (user_id,))
+        connection.commit()
+
     def close_db(self):
         connection = self._get_thread_connection()
         connection.close()

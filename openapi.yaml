@@ -1,0 +1,276 @@
+openapi: 3.1.0
+info:
+  title: SAIE
+  version: 1.0.0
+paths:
+  /:
+    get:
+      tags:
+      - SAIE - sistema de administracion de ingresos y egresos
+      summary: Index
+      operationId: index__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /users:
+    get:
+      tags:
+      - Users table
+      summary: Get All Users
+      operationId: get_all_users_users_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+    post:
+      tags:
+      - Users table
+      summary: Create User
+      operationId: create_user_users_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /users/{id}:
+    put:
+      tags:
+      - Users table
+      summary: Update User
+      operationId: update_user_users__id__put
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - Users table
+      summary: Delete User
+      operationId: delete_user_users__id__delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /transactions/add:
+    post:
+      tags:
+      - Transactions table
+      summary: Add Transaction
+      operationId: add_transaction_transactions_add_post
+      parameters:
+      - name: user_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          title: User Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /transactions/total:
+    get:
+      tags:
+      - Transactions table
+      summary: Get Total Transactions
+      operationId: get_total_transactions_transactions_total_get
+      parameters:
+      - name: user_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          title: User Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /transactions/delete:
+    delete:
+      tags:
+      - Transactions table
+      summary: Delete Transaction
+      operationId: delete_transaction_transactions_delete_delete
+      parameters:
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: integer
+          title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    CreateUserRequest:
+      properties:
+        username:
+          type: string
+          title: Username
+          default: user_test1
+        email:
+          type: string
+          title: Email
+          default: email_test1
+        password:
+          type: string
+          title: Password
+          default: pass_test1
+      type: object
+      title: CreateUserRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TransactionRequest:
+      properties:
+        type:
+          type: string
+          title: Type
+        amount:
+          type: number
+          title: Amount
+      type: object
+      required:
+      - type
+      - amount
+      title: TransactionRequest
+    User:
+      properties:
+        username:
+          type: string
+          title: Username
+        email:
+          type: string
+          title: Email
+        password:
+          type: string
+          title: Password
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          default: '2023-11-05T16:00:16.254612'
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          default: '2023-11-05T16:00:16.254612'
+      type: object
+      required:
+      - username
+      - email
+      - password
+      title: User
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

@@ -25,12 +25,12 @@ class TransactionRequest(BaseModel):
     amount: float
 
 
-@app.get("/")
+@app.get("/", tags=['SAIE - sistema de administracion de ingresos y egresos'])
 def index():
     return "Backed User's transactions"
 
 
-@app.post("/users")
+@app.post("/users", tags=['Users table'])
 def create_user(user: CreateUserRequest):
     user = User(username=user.username,
                 email=user.email, password=user.password)
@@ -39,20 +39,20 @@ def create_user(user: CreateUserRequest):
     return user
 
 
-@app.put("/users/{id}")
+@app.put("/users/{id}", tags=['Users table'])
 def update_user(id: int, user: User):
     db.update_user(id, user)
     return user
 
 
-@app.delete("/users/{id}")
+@app.delete("/users/{id}", tags=['Users table'])
 def delete_user(id: int):
     db.delete_user(id)
     return {"message": "Usuario eliminado"}
 
 
 # Use response_model to specify the model for the response
-@app.get("/users")
+@app.get("/users", tags=['Users table'])
 def get_all_users():
     users = db.get_users()
     user_list = [{"id": user.id, "username": user.username, "email": user.email,
@@ -60,21 +60,27 @@ def get_all_users():
     return user_list
 
 
-@app.post("/users/{user_id}/transactions")
+@app.post("/transactions/add", tags=['Transactions table'])
 def add_transaction(user_id: int, transaction: TransactionRequest):
     db.add_transaction(user_id, transaction.type, transaction.amount)
     return {"message": "Transaction added"}
 
 
-@app.get("/users/{user_id}/transactions/total")
+@app.get("/transactions/total", tags=['Transactions table'])
 def get_total_transactions(user_id: int):
     total_transactions = db.get_total_transactions(user_id)
     return total_transactions
 
 
+@app.delete("/transactions/delete", tags=['Transactions table'])
+def delete_transaction(id: int):
+    db.delete_transaction(id)
+    return {"message": "Transaccion eliminada"}
+
+
 def generate_openapi_yaml():
     openapi_schema = get_openapi(
-        title="Your API Title", version="1.0.0", routes="/users")
+        title="SAIE", version="1.0.0", routes=app.routes)
     yaml = YAML()
     with open("openapi.yaml", "w") as file:
         yaml.dump(openapi_schema, file)
