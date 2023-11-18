@@ -161,6 +161,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /transactions/update_type:
+    put:
+      tags:
+      - Transactions table
+      summary: Update Transaction Type
+      operationId: update_transaction_type_transactions_update_type_put
+      parameters:
+      - name: user_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          title: User Id
+      - name: transaction_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          title: Transaction Id
+      - name: new_type
+        in: query
+        required: true
+        schema:
+          type: string
+          title: New Type
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /transactions/delete:
     delete:
       tags:
@@ -168,12 +205,49 @@ paths:
       summary: Delete Transaction
       operationId: delete_transaction_transactions_delete_delete
       parameters:
-      - name: id
+      - name: user_id
         in: query
         required: true
         schema:
           type: integer
-          title: Id
+          title: User Id
+      - name: transaction_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          title: Transaction Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /budget_planification:
+    get:
+      tags:
+      - Budget
+      summary: Get Planification Budget
+      operationId: get_planification_budget_budget_planification_get
+      parameters:
+      - name: amount
+        in: query
+        required: true
+        schema:
+          type: number
+          title: Amount
+      - name: number_months
+        in: query
+        required: true
+        schema:
+          type: number
+          title: Number Months
       responses:
         '200':
           description: Successful Response
@@ -241,12 +315,12 @@ components:
           type: string
           format: date-time
           title: Created At
-          default: '2023-11-05T16:00:16.254612'
+          default: '2023-11-18T17:07:40.281188'
         updated_at:
           type: string
           format: date-time
           title: Updated At
-          default: '2023-11-05T16:00:16.254612'
+          default: '2023-11-18T17:07:40.281188'
       type: object
       required:
       - username

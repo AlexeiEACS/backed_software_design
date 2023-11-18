@@ -98,11 +98,19 @@ class DB:
         result = cursor.fetchall()
         return {"user_id": user_id, "total": dict(result)}
 
-    def delete_transaction(self, user_id: int):
+    def delete_transaction(self, user_id: int, transaction_id: int):
         connection = self._get_thread_connection()
         cursor = connection.cursor()
-        query = "DELETE FROM transactions WHERE id = ?"
-        cursor.execute(query, (user_id,))
+        query = "DELETE FROM transactions WHERE used_id = ? AND id = ?"
+        cursor.execute(query, (user_id, transaction_id))
+        connection.commit()
+
+    def update_transaction_type(self, user_id: int, transaction_id: int, new_type: str):
+        connection = self._get_thread_connection()
+        cursor = connection.cursor()
+        query = "UPDATE transactions SET type = ? WHERE used_id = ? AND id = ?"
+        values = (new_type, user_id, transaction_id)
+        cursor.execute(query, values)
         connection.commit()
 
     def close_db(self):

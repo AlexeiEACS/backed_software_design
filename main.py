@@ -9,6 +9,7 @@ from fastapi.openapi.utils import get_openapi
 from app.models.user import User
 from app.models.db import DB
 from ruamel.yaml import YAML
+import datetime
 
 app = FastAPI()
 db = DB('data_base_file.db')
@@ -72,10 +73,28 @@ def get_total_transactions(user_id: int):
     return total_transactions
 
 
+@app.put("/transactions/update_type", tags=['Transactions table'])
+def update_transaction_type(user_id: int, transaction_id: int, new_type: str):
+    db.update_transaction_type(user_id, transaction_id, new_type)
+    return {"message": f"Transaccion {transaction_id} modificada"}
+
+
 @app.delete("/transactions/delete", tags=['Transactions table'])
-def delete_transaction(id: int):
-    db.delete_transaction(id)
+def delete_transaction(user_id: int, transaction_id: int):
+    db.delete_transaction(user_id, transaction_id)
     return {"message": "Transaccion eliminada"}
+
+
+@app.get("/budget_planification", tags=['Budget'])
+def get_planification_budget(amount: float, number_months: float):
+    by_month = amount / number_months
+    start_date = datetime.datetime.today()
+    dicts = []
+    for i in range(int(number_months)):
+        date_str = (start_date + datetime.timedelta(days=30*i)
+                    ).strftime('%Y-%m-%d')
+        dicts.append({date_str: by_month})
+    return dicts
 
 
 def generate_openapi_yaml():
