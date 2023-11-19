@@ -9,12 +9,20 @@ from fastapi.openapi.utils import get_openapi
 from app.models.user import User
 from app.models.db import DB
 from ruamel.yaml import YAML
+from fastapi.middleware.cors import CORSMiddleware
+
 import datetime
 
 app = FastAPI()
 db = DB('data_base_file.db')
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"], # Orígenes permitidos
+    allow_credentials=True,
+    allow_methods=["*"], # Métodos permitidos
+    allow_headers=["*"], # Cabeceras permitidas
+)
 class CreateUserRequest(BaseModel):
     username: str = 'user_test1'
     email: str = 'email_test1'
@@ -87,13 +95,14 @@ def delete_transaction(user_id: int, transaction_id: int):
 
 @app.get("/budget_planification", tags=['Budget'])
 def get_planification_budget(amount: float, number_months: float):
+    amount,number_months = float(amount), float(number_months)
     by_month = amount / number_months
     start_date = datetime.datetime.today()
-    dicts = []
+    dicts = {}
     for i in range(int(number_months)):
         date_str = (start_date + datetime.timedelta(days=30*i)
                     ).strftime('%Y-%m-%d')
-        dicts.append({date_str: by_month})
+        dicts[date_str] = by_month
     return dicts
 
 
@@ -109,4 +118,4 @@ generate_openapi_yaml()
 if __name__ == "__main__":
     db.create_tables()
     generate_openapi_yaml()
-    # app.run(debug=True)
+    #app.run(debug=True)
